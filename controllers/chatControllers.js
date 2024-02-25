@@ -1,50 +1,62 @@
 const asyncHandler = require("express-async-handler");
-const Chat = require("../models/chatModel");
-const User = require("../models/userModel");
+const Chat = require("../Models/chatModel");
+const User = require("../Models/userModel");
 
 //@description     Create or fetch One to One Chat
 //@route           POST /api/chat/
 //@access          Protected
 const accessChat = asyncHandler(async (req, res) => {
+  // Extract userId from the request body
   const { userId } = req.body;
 
+  // Check if userId is provided
   if (!userId) {
     console.log("UserId param not sent with request");
-    return res.sendStatus(400);
+    return res.sendStatus(400); // Send 400 Bad Request if userId is not provided
   }
 
+  // Check if a chat already exists between the current user and the specified user
   var isChat = await Chat.find({
-    isGroupChat: false,
+    isGroupChat: false, // Only consider individual chats (not group chats)
     $and: [
-      { users: { $elemMatch: { $eq: req.user._id } } },
-      { users: { $elemMatch: { $eq: userId } } },
+      { users: { $elemMatch: { $eq: req.user._id } } }, // Check if current user is in the users array
+      { users: { $elemMatch: { $eq: userId } } }, // Check if specified user is in the users array
     ],
   })
-    .populate("users", "-password")
-    .populate("latestMessage");
+    .populate("users", "-password") // Populate the 'users' field, excluding passwords
+    .populate("latestMessage"); // Populate the 'latestMessage' field
 
+  // Populate sender details for latest message
   isChat = await User.populate(isChat, {
     path: "latestMessage.sender",
     select: "name pic email",
   });
 
+  // If a chat exists, send the chat data
   if (isChat.length > 0) {
     res.send(isChat[0]);
   } else {
+    // If no chat exists, create a new chat between the current user and the specified user
     var chatData = {
-      chatName: "sender",
-      isGroupChat: false,
-      users: [req.user._id, userId],
+      chatName: "sender", 
+      isGroupChat: false, // Individual chat
+      users: [req.user._id, userId], // Array of user IDs involved in the chat
     };
 
     try {
+      // Create the new chat
       const createdChat = await Chat.create(chatData);
+
+      // Retrieve the newly created chat and populate the 'users' field
       const FullChat = await Chat.findOne({ _id: createdChat._id }).populate(
         "users",
         "-password"
       );
+
+      // Send the newly created chat data
       res.status(200).json(FullChat);
     } catch (error) {
+      // If an error occurs during chat creation, handle and respond with an error status
       res.status(400);
       throw new Error(error.message);
     }
@@ -54,21 +66,30 @@ const accessChat = asyncHandler(async (req, res) => {
 //@description     Fetch all chats for a user
 //@route           GET /api/chat/
 //@access          Protected
+
 const fetchChats = asyncHandler(async (req, res) => {
   try {
+    // Find chats where the current user is involved
     Chat.find({ users: { $elemMatch: { $eq: req.user._id } } })
+      // Populate the 'users' field, excluding passwords
       .populate("users", "-password")
+      // Populate the 'groupAdmin' field, excluding passwords
       .populate("groupAdmin", "-password")
+      // Populate the 'latestMessage' field
       .populate("latestMessage")
+      // Sort the results by 'updatedAt' field in descending order
       .sort({ updatedAt: -1 })
       .then(async (results) => {
+        // Populate sender details for latest message
         results = await User.populate(results, {
           path: "latestMessage.sender",
           select: "name pic email",
         });
+        // Send the populated chat data to the client
         res.status(200).send(results);
       });
   } catch (error) {
+    // If an error occurs during the process, handle and respond with an error status
     res.status(400);
     throw new Error(error.message);
   }
