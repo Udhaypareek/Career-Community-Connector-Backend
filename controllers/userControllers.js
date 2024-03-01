@@ -3,8 +3,9 @@ const User = require("../Models/userModel");
 const generateToken = require("../config/generateToken");
 
 //@description     Get or Search all users
-//@route           GET /api/user?search=
+//@route           GET http://localhost:5000/api/user?search=
 //@access          Public
+
 const allUsers = asyncHandler(async (req, res) => {
   const keyword = req.query.search
     ? {
@@ -20,7 +21,7 @@ const allUsers = asyncHandler(async (req, res) => {
 });
 
 //@description     Register new user
-//@route           POST /api/user/
+//@route           POST http://localhost:5000/api/user/
 //@access          Public
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password, pic } = req.body;
@@ -45,7 +46,8 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (user) {
-    res.status(201).json({
+    res.status(201).json(
+       resobj = {
       _id: user._id,
       name: user.name,
       email: user.email,
@@ -53,6 +55,8 @@ const registerUser = asyncHandler(async (req, res) => {
       pic: user.pic,
       token: generateToken(user._id),
     });
+    console.log(resobj);
+
   } else {
     res.status(400);
     throw new Error("User not found");
@@ -60,7 +64,7 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 //@description     Auth the user
-//@route           POST /api/users/login
+//@route           POST http://localhost:5000/api/users/login
 //@access          Public
 const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
@@ -68,7 +72,7 @@ const authUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email });
 
   if (user && (await user.matchPassword(password))) {
-    res.json({
+     res.json({
       _id: user._id,
       name: user.name,
       email: user.email,
@@ -76,6 +80,7 @@ const authUser = asyncHandler(async (req, res) => {
       pic: user.pic,
       token: generateToken(user._id),
     });
+    // console.log(res);
   } else {
     res.status(401);
     throw new Error("Invalid Email or Password");

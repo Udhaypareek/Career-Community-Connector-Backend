@@ -4,7 +4,7 @@ const User = require("../Models/userModel");
 const Chat = require("../Models/chatModel");
 
 //@description     Get all Messages
-//@route           GET /api/Message/:chatId
+//@route           GET http://localhost:5000/api/Message/:chatId
 //@access          Protected
 const allMessages = asyncHandler(async (req, res) => {
   try {
@@ -26,7 +26,7 @@ const allMessages = asyncHandler(async (req, res) => {
 
 
 //@description     Create New Message
-//@route           POST /api/Message/
+//@route           POST http://localhost:5000/api/Message/
 //@access          Protected
 
 const sendMessage = asyncHandler(async (req, res) => {

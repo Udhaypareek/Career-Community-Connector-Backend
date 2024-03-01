@@ -47,19 +47,19 @@ app.use(notFound);
 app.use(errorHandler);
 
 const port = process.env.PORT;
-
+const server = "http://localhost:5000/"
 
 app.listen(port, () => {
     console.log(`Mynotebook app listening at http://localhost:${port}`)
 })
 
 
-// 
+
 // const io = require("socket.io")(server, {
 //     pingTimeout: 60000,
 //     cors: {
-//       origin: "http://localhost:3000",
-//       // credentials: true,
+//       origin: "http://localhost:5000",
+//       credentials: true,
 //     },
 //   });
   
