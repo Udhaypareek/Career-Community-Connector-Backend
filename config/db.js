@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const dotenv = require("dotenv");
 dotenv.config()
-const mongoURL = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster1.wio2sfb.mongodb.net/`;
+const mongoURL = `${process.env.MONGO_URI}`;
 
 
 // This is the code for connecting our backend with our database.
