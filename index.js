@@ -17,7 +17,7 @@ const server = http.createServer(app);
 
 app.use(express.json());
 app.use(cors({
-  origin: "http://localhost:3000"||process.env.FRONTEND_URL ,
+  origin: process.env.FRONTEND_URL ,
   credentials: true,
 }));
 
@@ -36,7 +36,7 @@ const port = process.env.PORT || 5000;
 const io = new Server(server, {
   pingTimeout: 60000,
   cors: {
-    origin:"http://localhost:3000"||process.env.FRONTEND_URL,
+    origin: process.env.FRONTEND_URL,
     credentials: true,
   },
 });
