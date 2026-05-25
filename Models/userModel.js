@@ -16,6 +16,10 @@ const userSchema = mongoose.Schema(
       required: true,
       default: false,
     },
+    selectedTracks: {
+      type: [String],
+      default: [],
+    },
   },
   { timestamps: true }
 );

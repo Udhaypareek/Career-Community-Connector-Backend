@@ -10,6 +10,9 @@ const chatModel = mongoose.Schema(
       ref: "Message",
     },
     groupAdmin: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    isTrackChat: { type: Boolean, default: false },
+    trackKey: { type: String, trim: true },
+    trackTitle: { type: String, trim: true },
   },
   { timestamps: true }
 );
